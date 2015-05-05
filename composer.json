@@ -1,0 +1,48 @@
+{
+  "name": "Schibsted-Tech-Polska/php-sndapi",
+  "description": "SND API v2 client",
+  "version": "0.1.0",
+  "type": "library",
+  "keywords": ["snd", "api", "schibsted", "stp"],
+  "homepage": "https://github.com/Schibsted-Tech-Polska/php-sndapi",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "STP Stavanger Aftenblad Team",
+      "email": "sa@schibsted.pl"
+    }
+  ],
+  "support": {
+    "email": "sa@schibsted.pl"
+  },
+  "require": {
+    "php": ">=5.5.0",
+    "guzzle/guzzle": "3.9.*",
+    "psr/log": "1.0.*",
+    "symfony/console": "2.6.*",
+    "soapbox/laravel-formatter": "2.x"
+  },
+  "require-dev": {
+    "phpmd/phpmd": "2.2.*",
+    "sebastian/phpcpd": "2.0.*",
+    "squizlabs/php_codesniffer": "2.3.*",
+    "phpunit/phpunit": "4.6.*",
+    "phploc/phploc": "2.1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Stp\\SndApi\\": "src/Stp/SndApi"
+    }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "npm install"
+    ],
+    "post-update-cmd": [
+      "npm install"
+    ]
+  },
+  "bin": [
+    "bin/sndapi-console"
+  ]
+}
