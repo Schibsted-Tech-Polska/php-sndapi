@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+
+$application = new Application('sndapi-console', '0.1.0');
+$application->add(new \Stp\SndApi\News\Command\ServiceDocumentCommand());
+$application->add(new \Stp\SndApi\News\Command\SectionsListCommand());
+$application->add(new \Stp\SndApi\News\Command\SubsectionsListCommand());
+$application->add(new \Stp\SndApi\News\Command\SectionByUniqueNameCommand());
+$application->add(new \Stp\SndApi\News\Command\SectionByIdCommand());
+$application->add(new \Stp\SndApi\News\Command\ArticlesBySectionIdCommand());
+$application->add(new \Stp\SndApi\News\Command\ArticleCommand());
+$application->add(new \Stp\SndApi\News\Command\SearchByInstanceCommand());
+$application->add(new \Stp\SndApi\News\Command\SearchCollectionCommand());
+
+$application->run();
