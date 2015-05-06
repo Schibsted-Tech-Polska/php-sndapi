@@ -1,5 +1,5 @@
 {
-  "name": "Schibsted-Tech-Polska/php-sndapi",
+  "name": "schibsted-tech-polska/php-sndapi",
   "description": "SND API v2 client",
   "version": "0.1.0",
   "type": "library",
