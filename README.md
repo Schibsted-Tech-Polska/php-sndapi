@@ -1,5 +1,7 @@
 # SND API Client
 
+[![Build Status](https://travis-ci.org/Schibsted-Tech-Polska/php-sndapi.svg)](https://travis-ci.org/Schibsted-Tech-Polska/php-sndapi)
+
 This is a packagist-friendly SND API client built by Stavanger Aftenblad's team. The API uses application/json content type with UTF-8 charset. Each method returns result of `json_decode` run on result. This is not configurable yet, however we plan to introduce entity hydrators (along with entities) in near future.
 
 Client provides console access to the API:
