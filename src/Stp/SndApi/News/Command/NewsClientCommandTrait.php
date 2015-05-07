@@ -11,10 +11,11 @@ trait NewsClientCommandTrait
 
     private function initNewsClient(InputInterface $input)
     {
+        $key = $input->getOption('key');
         $secret = $input->getOption('secret');
         $publicationId = $input->getOption('publicationId');
 
-        $this->newsClient = new Client($secret, $publicationId);
+        $this->newsClient = new Client($key, $secret, $publicationId);
     }
 
     /**

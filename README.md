@@ -14,6 +14,7 @@ Console usage requires two parameters:
 
 ```sh
 Options:
+ --key (-s)            SND API key
  --secret (-s)         SND API secret
  --publicationId (-p)  SND API publication id (common, sa, fvn, bt, ap)
 ```
@@ -57,10 +58,11 @@ Initialize the library with
 
 use Stp\SndApi\News\Client as NewsClient;
 
+const API_KEY = 'mnbvcxzlkjhgfdsapoiuytrew';
 const API_SECRET = 'qwertyuiopasdfghjklzxcvbn';
 const PUBLICATION_ID = 'sa';
 
-$newsClient = new NewsClient(API_SECRET, PUBLICATION_ID);
+$newsClient = new NewsClient(API_KEY, API_SECRET, PUBLICATION_ID);
 ```
 
 ### Methods

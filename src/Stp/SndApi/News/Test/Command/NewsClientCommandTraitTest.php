@@ -19,8 +19,8 @@ class NewsClientCommandTraitTest extends \PHPUnit_Framework_TestCase
 
         $input->expects($this->any())
             ->method('getOption')
-            ->withConsecutive(['secret'], ['publicationId'])
-            ->willReturnOnConsecutiveCalls('secret', 'sa');
+            ->withConsecutive(['key'], ['secret'], ['publicationId'])
+            ->willReturnOnConsecutiveCalls('key', 'secret', 'sa');
 
         $this->assertEmpty($this->newsClient);
 
@@ -31,7 +31,7 @@ class NewsClientCommandTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testSetNewsClient()
     {
-        $newsClient = new Client('secret', 'sa');
+        $newsClient = new Client('key', 'secret', 'sa');
 
         $this->setNewsClient($newsClient);
 

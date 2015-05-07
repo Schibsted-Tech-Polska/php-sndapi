@@ -24,7 +24,7 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
 
         /** @var Client|\PHPUnit_Framework_MockObject_MockObject $client */
         $client = $this->getMockBuilder(Client::class)
-            ->setConstructorArgs(['secret', 'sa'])
+            ->setConstructorArgs(['key', 'secret', 'sa'])
             ->getMock();
 
         /** @var ArticleCommand $command */

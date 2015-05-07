@@ -17,7 +17,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     private function getStub()
     {
-        return $this->getMockForAbstractClass(Client::class, ['apisecret', 'sa']);
+        return $this->getMockForAbstractClass(Client::class, ['apikey', 'apisecret', 'sa']);
     }
 
     public function testApiSecret()
@@ -26,6 +26,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $stub->setApiSecret('test');
         $this->assertEquals('test', $stub->getApiSecret());
+    }
+
+    public function testApiKey()
+    {
+        $stub = $this->getStub();
+
+        $stub->setApiKey('test');
+        $this->assertEquals('test', $stub->getApiKey());
     }
 
     public function testApiUrl()
@@ -66,6 +74,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->invokeMethod($stub, 'signRequest', [$request]);
 
         $this->assertNotNull($request->getHeader('X-Snd-ApiSignature'));
+        $this->assertNotNull($request->getHeader('X-Snd-ApiKey'));
+    }
+
+    public function testSignRequestWithEmptyApiKey()
+    {
+        $stub = $this->getStub();
+        $stub->setApiKey('');
+
+        $client = new GuzzleClient();
+        $request = $client->createRequest('GET', 'http://www.example.org/');
+
+        $this->invokeMethod($stub, 'signRequest', [$request]);
+
+        $this->assertNull($request->getHeader('X-Snd-ApiKey'));
     }
 
     public function testBuildRequest()

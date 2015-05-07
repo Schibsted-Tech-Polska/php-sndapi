@@ -19,9 +19,9 @@ class Client extends CommonClient
     /**
      * {@inheritdoc}
      */
-    public function __construct($apiSecret, $publicationId)
+    public function __construct($apiKey, $apiSecret, $publicationId)
     {
-        parent::__construct($apiSecret, $publicationId);
+        parent::__construct($apiKey, $apiSecret, $publicationId);
 
         $this->setApiUrl(self::BASE_URL . '/news/v2');
     }

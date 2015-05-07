@@ -22,6 +22,16 @@ class BaseCommandTest extends \PHPUnit_Framework_TestCase
         $stub->expects($this->at(0))
             ->method('addOption')
             ->with(
+                'key',
+                'k',
+                InputOption::VALUE_OPTIONAL,
+                $this->anything()
+            )
+            ->willReturn($stub);
+
+        $stub->expects($this->at(1))
+            ->method('addOption')
+            ->with(
                 'secret',
                 's',
                 InputOption::VALUE_REQUIRED,
@@ -29,7 +39,7 @@ class BaseCommandTest extends \PHPUnit_Framework_TestCase
             )
             ->willReturn($stub);
 
-        $stub->expects($this->at(1))
+        $stub->expects($this->at(2))
             ->method('addOption')
             ->with(
                 'publicationId',
@@ -40,6 +50,5 @@ class BaseCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($stub);
 
         $this->invokeMethod($stub, 'configure');
-
     }
 }
