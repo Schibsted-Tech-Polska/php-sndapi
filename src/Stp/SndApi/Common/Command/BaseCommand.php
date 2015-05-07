@@ -12,6 +12,12 @@ abstract class BaseCommand extends Command
     {
         $this
             ->addOption(
+                'key',
+                'k',
+                InputOption::VALUE_OPTIONAL,
+                'SND API key'
+            )
+            ->addOption(
                 'secret',
                 's',
                 InputOption::VALUE_REQUIRED,

@@ -23,6 +23,11 @@ abstract class Client implements LoggerAwareInterface
     /**
      * @var string
      */
+    protected $apiKey;
+
+    /**
+     * @var string
+     */
     protected $apiSecret;
 
     /**
@@ -41,12 +46,14 @@ abstract class Client implements LoggerAwareInterface
     protected $logger;
 
     /**
+     * @param string $apiKey
      * @param string $apiSecret
      * @param string $publicationId
      */
-    public function __construct($apiSecret, $publicationId)
+    public function __construct($apiKey, $apiSecret, $publicationId)
     {
         $this->client = new GuzzleClient($this->apiUrl);
+        $this->setApiKey($apiKey);
         $this->setApiSecret($apiSecret);
         $this->setPublicationId($publicationId);
         $this->setLogger(new NullLogger());
@@ -61,6 +68,10 @@ abstract class Client implements LoggerAwareInterface
         $signature = sprintf('0x%s', hash_hmac('sha256', $now->format('d M Y H'), $this->getApiSecret()));
 
         $request->addHeader('X-Snd-ApiSignature', $signature);
+
+        if (!empty($this->getApiKey())) {
+            $request->addHeader('X-Snd-ApiKey', $this->getApiKey());
+        }
     }
 
     /**
@@ -89,6 +100,22 @@ abstract class Client implements LoggerAwareInterface
         $this->signRequest($request);
 
         return $this->client->send($request);
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string $apiKey
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
     }
 
     /**

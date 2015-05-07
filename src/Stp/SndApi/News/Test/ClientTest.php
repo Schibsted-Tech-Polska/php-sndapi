@@ -22,7 +22,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     private function getClient()
     {
-        return new Client('secret', 'sa');
+        return new Client('key', 'secret', 'sa');
     }
 
     /**
@@ -56,6 +56,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = $this->getClient();
 
         $this->assertEquals('http://api.snd.no/news/v2', $client->getApiUrl());
+        $this->assertEquals('key', $client->getApiKey());
         $this->assertEquals('secret', $client->getApiSecret());
         $this->assertEquals('sa', $client->getPublicationId());
     }
@@ -222,7 +223,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         /** @var Client|\PHPUnit_Framework_MockObject_MockObject $client */
         $client = $this->getMockBuilder(Client::class)
-            ->setConstructorArgs(['secret', 'sa'])
+            ->setConstructorArgs(['key', 'secret', 'sa'])
             ->setMethods(['searchByInstance'])
             ->getMock();
 
