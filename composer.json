@@ -1,7 +1,7 @@
 {
   "name": "schibsted-tech-polska/php-sndapi",
   "description": "SND API v2 client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "library",
   "keywords": ["snd", "api", "schibsted", "stp"],
   "homepage": "https://github.com/Schibsted-Tech-Polska/php-sndapi",
