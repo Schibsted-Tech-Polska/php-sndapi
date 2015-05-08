@@ -76,18 +76,22 @@ abstract class Client implements LoggerAwareInterface
 
     /**
      * @param RequestInterface $request
+     * @param bool $acceptJsonResponse
      */
-    protected function buildRequest(RequestInterface $request)
+    protected function buildRequest(RequestInterface $request, $acceptJsonResponse = true)
     {
-        $request->addHeader('Accept', 'application/json');
+        if ($acceptJsonResponse) {
+            $request->addHeader('Accept', 'application/json');
+        }
         $request->addHeader('Accept-Charset', 'UTF-8');
     }
 
     /**
      * @param string $url
+     * @param bool $acceptJsonResponse
      * @return array|Response|null
      */
-    protected function apiGet($url)
+    protected function apiGet($url, $acceptJsonResponse = true)
     {
         if (0 === preg_match('/^\//', $url)) {
             $url = '/' . $url;
@@ -96,7 +100,7 @@ abstract class Client implements LoggerAwareInterface
         $url = str_replace('{publicationId}', $this->getPublicationId(), $url);
 
         $request = $this->client->createRequest('GET', $this->getApiUrl() . $url);
-        $this->buildRequest($request);
+        $this->buildRequest($request, $acceptJsonResponse);
         $this->signRequest($request);
 
         return $this->client->send($request);
