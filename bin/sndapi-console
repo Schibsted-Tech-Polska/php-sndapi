@@ -26,5 +26,6 @@ $application->add(new \Stp\SndApi\News\Command\ArticlesBySectionIdCommand());
 $application->add(new \Stp\SndApi\News\Command\ArticleCommand());
 $application->add(new \Stp\SndApi\News\Command\SearchByInstanceCommand());
 $application->add(new \Stp\SndApi\News\Command\SearchCollectionCommand());
+$application->add(new \Stp\SndApi\News\Command\ImageVersionsCommand());
 
 $application->run();

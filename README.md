@@ -85,6 +85,16 @@ Console:
 bin/sndapi-console news:servicedocument [-s|--secret="..."] [-p|--publicationId="..."]
 ```
 
+#### getImageVersions
+
+$newsClient->getImageVersions();
+```
+
+Console:
+
+```sh
+bin/sndapi-console news:image:versions [-s|--secret="..."] [-p|--publicationId="..."]
+
 #### getSectionsList
 
 Returns sections list. 

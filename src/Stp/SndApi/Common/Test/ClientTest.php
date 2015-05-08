@@ -20,6 +20,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         return $this->getMockForAbstractClass(Client::class, ['apikey', 'apisecret', 'sa']);
     }
 
+    public function jsonAcceptationProvider()
+    {
+        return [
+            [true],
+            [false]
+        ];
+    }
+
     public function testApiSecret()
     {
         $stub = $this->getStub();
@@ -90,17 +98,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($request->getHeader('X-Snd-ApiKey'));
     }
 
-    public function testBuildRequest()
+    /**
+     * @dataProvider jsonAcceptationProvider
+     * @param bool $isJsonAccepted
+     */
+    public function testBuildRequest($isJsonAccepted)
     {
+
         $stub = $this->getStub();
 
         $client = new GuzzleClient();
         $request = $client->createRequest('GET', 'http://www.example.org/');
 
-        $this->invokeMethod($stub, 'buildRequest', [$request]);
+        $this->invokeMethod($stub, 'buildRequest', [$request, $isJsonAccepted]);
 
-        $this->assertNotNull($request->getHeader('Accept'));
+        if ($isJsonAccepted) {
+            $this->assertNotNull($request->getHeader('Accept'));
+        } else {
+            $this->assertNull($request->getHeader('Accept'));
+        }
         $this->assertNotNull($request->getHeader('Accept-Charset'));
+
     }
 
     public function testApiGet()

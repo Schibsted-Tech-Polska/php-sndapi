@@ -28,14 +28,15 @@ class Client extends CommonClient
 
     /**
      * @param string $url
+     * @param bool $acceptJsonResponse
      * @return array|Response|null
      * @throws ItemDoesNotExistsException
      * @throws UnsatisfactoryResponseCodeException
      */
-    protected function apiGet($url)
+    protected function apiGet($url, $acceptJsonResponse = true)
     {
         try {
-            $response = parent::apiGet($url);
+            $response = parent::apiGet($url, $acceptJsonResponse);
 
             if ($response->getStatusCode() !== 200) {
                 throw new UnsatisfactoryResponseCodeException();
@@ -164,6 +165,30 @@ class Client extends CommonClient
     public function getArticle($contentId)
     {
         return $this->searchByInstance($contentId, 'article');
+    }
+
+    /**
+     * @return array
+     * @throws ItemDoesNotExistsException
+     * @throws UnsatisfactoryResponseCodeException
+     */
+    public function getImageVersions()
+    {
+        $response = $this->apiGet(
+            sprintf(
+                '/publication/%s/imageversions',
+                $this->getPublicationId()
+            ),
+            false
+        );
+
+        $imageVersions = [];
+
+        if ($responseBody = $response->getBody()) {
+            $imageVersions = array_filter(explode("\n", $responseBody));
+        }
+
+        return $imageVersions;
     }
 
     /**

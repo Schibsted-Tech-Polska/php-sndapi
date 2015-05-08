@@ -5,6 +5,7 @@ namespace Stp\SndApi\News\Test\Command;
 use Stp\SndApi\News\Client;
 use Stp\SndApi\News\Command\ArticleCommand;
 use Stp\SndApi\News\Command\ArticlesBySectionIdCommand;
+use Stp\SndApi\News\Command\ImageVersionsCommand;
 use Stp\SndApi\News\Command\SearchByInstanceCommand;
 use Stp\SndApi\News\Command\SearchCollectionCommand;
 use Stp\SndApi\News\Command\SectionByIdCommand;
@@ -64,6 +65,7 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
                 'name' => 'test'
             ]],
             ['news:sections:list', SectionsListCommand::class, 'getSectionsList', []],
+            ['news:image:versions', ImageVersionsCommand::class, 'getImageVersions', []],
             ['news:servicedocument', ServiceDocumentCommand::class, 'getServiceDocument', []],
             ['news:subsections:list', SubsectionsListCommand::class, 'getSubsectionsList', [
                 'sectionId' => 100
