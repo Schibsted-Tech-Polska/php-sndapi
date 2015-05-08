@@ -1,7 +1,18 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+function includeIfExists($file) {
+    if (file_exists($file)) {
+        return include $file;
+    }
+
+    return false;
+}
+
+if (!includeIfExists(__DIR__ . '/../vendor/autoload.php') && !includeIfExists(__DIR__ . '/../../../autoload.php')) {
+    fwrite(STDERR, 'Can\'t load composer autoload.php');
+    exit(1);
+}
 
 use Symfony\Component\Console\Application;
 
