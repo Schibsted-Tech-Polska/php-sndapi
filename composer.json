@@ -1,7 +1,7 @@
 {
   "name": "schibsted-tech-polska/php-sndapi",
   "description": "SND API v2 client",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "type": "library",
   "keywords": ["snd", "api", "schibsted", "stp"],
   "homepage": "https://github.com/Schibsted-Tech-Polska/php-sndapi",
@@ -19,7 +19,7 @@
     "php": ">=5.5.0",
     "guzzle/guzzle": "3.9.*",
     "psr/log": "1.0.*",
-    "symfony/console": "2.6.*",
+    "symfony/console": "2.x",
     "soapbox/laravel-formatter": "2.x"
   },
   "require-dev": {
