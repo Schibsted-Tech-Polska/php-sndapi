@@ -121,7 +121,7 @@ class Client extends CommonClient
     }
 
     /**
-     * @param int $sectionId
+     * @param int|string $sectionId Section id or uniqueName
      * @param string $method
      * @param array $parameters
      * @return array|bool|float|int|string
@@ -145,7 +145,7 @@ class Client extends CommonClient
         }
 
         $url = sprintf(
-            '/publication/{publicationId}/sections/%d/%s?%s',
+            '/publication/{publicationId}/sections/%s/%s?%s',
             $sectionId,
             $method,
             http_build_query($parameters)

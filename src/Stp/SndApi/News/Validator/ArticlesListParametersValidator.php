@@ -16,7 +16,8 @@ class ArticlesListParametersValidator implements ValidatorInterface
             'offset',
             'limit',
             'since',
-            'until'
+            'until',
+            'contentType'
         ]
     ];
 

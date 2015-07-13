@@ -163,7 +163,7 @@ bin/sndapi-console news:section:id [-s|--secret="..."] [-p|--publicationId="..."
 
 #### getArticlesBySectionId
 
-Finds a list of articles using section id.
+Finds a list of articles using section id or section's unique name.
 
 [http://developers.snd.no/doc/news/documentation/article#listarticles](http://developers.snd.no/doc/news/documentation/article#listarticles)
 
