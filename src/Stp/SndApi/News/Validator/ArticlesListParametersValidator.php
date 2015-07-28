@@ -17,7 +17,9 @@ class ArticlesListParametersValidator implements ValidatorInterface
             'limit',
             'since',
             'until',
-            'contentType'
+            'contentType',
+            'includeSubsections',
+            'homeSectionOnly'
         ]
     ];
 
