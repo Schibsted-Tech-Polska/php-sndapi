@@ -167,6 +167,17 @@ Finds a list of articles using section id or section's unique name.
 
 [http://developers.snd.no/doc/news/documentation/article#listarticles](http://developers.snd.no/doc/news/documentation/article#listarticles)
 
+### Parameters
+
+Numeric parameters
+  * areaLimit 
+  * offset
+  * limit
+
+Boolean values
+  * includeSubsections 
+  * homeSectionOnly 
+
 ```php
 <?php
 
