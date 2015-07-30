@@ -19,7 +19,7 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
             [
                 'desked',
                 [
-                    'invalid' => true
+                    'invalid' => 'true'
                 ],
                 false
             ],
@@ -36,7 +36,7 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
                 [
                     'offset' => 20,
                     'limit' => 20,
-                    'invalid' => true
+                    'invalid' => 'true'
                 ],
                 false
             ],
@@ -45,7 +45,7 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
                 [
                     'offset' => 20,
                     'limit' => 20,
-                    'includeSubsections' => true
+                    'includeSubsections' => 'true'
                 ],
                 true
             ],
@@ -54,8 +54,8 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
                 [
                     'offset' => 20,
                     'limit' => 20,
-                    'includeSubsections' => true,
-                    'homeSectionOnly' => true
+                    'includeSubsections' => 'true',
+                    'homeSectionOnly' => 'true'
                 ],
                 true
             ],
@@ -64,8 +64,8 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
                 [
                     'offset' => 20,
                     'limit' => 20,
-                    'includeSubsections' => true,
-                    'invalid' => true
+                    'includeSubsections' => 'true',
+                    'invalid' => 'true'
                 ],
                 false
             ],
@@ -74,8 +74,8 @@ class ArticlesListParametersValidatorTest extends \PHPUnit_Framework_TestCase
                 [
                     'offset' => 20,
                     'limit' => 20,
-                    'invalid' => true,
-                    'homeSectionOnly' => true
+                    'invalid' => 'true',
+                    'homeSectionOnly' => 'true'
                 ],
                 false
             ]

@@ -2,6 +2,7 @@
 
 namespace Stp\SndApi\News\Validator;
 
+use DateTime;
 use Stp\SndApi\Common\ValidatorInterface;
 
 class ArticlesListParametersValidator implements ValidatorInterface
@@ -23,6 +24,11 @@ class ArticlesListParametersValidator implements ValidatorInterface
         ]
     ];
 
+    private $allowedParameterTypes = [
+        'includeSubsections' => 'boolean',
+        'homeSectionOnly' => 'boolean',
+    ];
+
     private $method;
 
     private $parameters;
@@ -37,15 +43,31 @@ class ArticlesListParametersValidator implements ValidatorInterface
         $this->parameters = $parameters;
     }
 
+    private function validateBooleanString($value)
+    {
+        return $value === 'true' || $value === 'false';
+    }
+
+    private function entryIsValid($key, $value)
+    {
+        if (!in_array($key, $this->allowedMethodsParameters[$this->method])) {
+            return false;
+        }
+
+        if (!array_key_exists($key, $this->allowedParameterTypes)) {
+            return true;
+        }
+
+        return $this->validateBooleanString($value);
+    }
+
     /**
      * @return bool
      */
     public function isValid()
     {
-        $parameterKeys = array_keys($this->parameters);
-
-        foreach ($parameterKeys as $parameter) {
-            if (!in_array($parameter, $this->allowedMethodsParameters[$this->method])) {
+        foreach ($this->parameters as $parameterName => $parameterValue) {
+            if (!$this->entryIsValid($parameterName, $parameterValue)) {
                 return false;
             }
         }
