@@ -7,6 +7,7 @@ use Guzzle\Http\Message\Response;
 use Stp\SndApi\Common\Client as CommonClient;
 use Stp\SndApi\Common\Exception\ItemDoesNotExistsException;
 use Stp\SndApi\Common\Exception\UnsatisfactoryResponseCodeException;
+use Stp\SndApi\News\Converter\ArticlesListParametersConverter;
 use Stp\SndApi\News\Exception\InvalidContentTypeException;
 use Stp\SndApi\News\Exception\InvalidMethodException;
 use Stp\SndApi\News\Exception\InvalidMethodParametersException;
@@ -137,10 +138,13 @@ class Client extends CommonClient
             throw new InvalidMethodException(sprintf('Method "%s" is not allowed', $method));
         }
 
+        $parametersConverter = new ArticlesListParametersConverter();
+        $parameters = $parametersConverter->convert($parameters);
+
         $parametersValidator = new ArticlesListParametersValidator($method, $parameters);
         if (!$parametersValidator->isValid()) {
             throw new InvalidMethodParametersException(
-                sprintf('Invalid parameters used for "%s" method', $method)
+                sprintf('Invalid parameter name or value used for "%s" method', $method)
             );
         }
 
