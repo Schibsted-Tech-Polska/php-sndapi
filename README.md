@@ -8,10 +8,10 @@ This is a packagist-friendly SND API client built by Stavanger Aftenblad's team.
 Client provides console access to the API:
 
 ```sh
-bin/console
+bin/sndapi-console
 ```
 
-Console usage requires two parameters:
+Console usage requires three parameters:
 
 ```sh
 Options:

@@ -2,11 +2,10 @@
 
 namespace Stp\SndApi\News\Test;
 
-use Guzzle\Common\Event;
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
-use Guzzle\Http\Client as GuzzleClient;
+use GuzzleHttp\Message\Request;
+use GuzzleHttp\Message\Response;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Stream\Stream;
 use Stp\SndApi\Common\Test\InvokeInaccessibleMethodTrait;
 use Stp\SndApi\News\Client;
 
@@ -26,23 +25,29 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param int $responseCode
+     * @param null|array $headers
+     * @param array $responseBody
+     * @param callable|null $expectationCallback
+     *
      * @return Client
      */
     private function getClientWithResponse(
         $responseCode = 200,
-        $headers = null,
+        $headers = [],
         $responseBody = [],
-        $requestCallback = null
+        $expectationCallback = null
     ) {
-        $validResponse = new Response($responseCode, $headers, json_encode($responseBody));
+        $stream = Stream::factory(json_encode($responseBody));
+        $validResponse = new Response($responseCode, $headers, $stream);
 
-        $plugin = new MockPlugin();
-        $plugin->addResponse($validResponse);
+        $guzzleClient = $this->getMock(GuzzleHttpClient::class, ['send', 'createRequest']);
+        $guzzleClient->expects($this->once())
+            ->method('send')
+            ->willReturn($validResponse);
 
-        $guzzleClient = new GuzzleClient();
-        $guzzleClient->addSubscriber($plugin);
-        if ($requestCallback) {
-            $guzzleClient->getEventDispatcher()->addListener('request.before_send', $requestCallback);
+        if ($expectationCallback) {
+            call_user_func($expectationCallback, $guzzleClient);
         }
 
         $client = $this->getClient();
@@ -63,7 +68,16 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testApiGet()
     {
-        $client = $this->getClientWithResponse(200);
+        $client = $this->getClientWithResponse(200, [], [], function (GuzzleHttpClient $guzzleClient) {
+            /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+            $guzzleClient->expects($this->once())
+                ->method('createRequest')
+                ->with(
+                    'GET',
+                    'http://api.snd.no/news/v2/'
+                )
+                ->willReturn(new Request('GET', '/'));
+        });
 
         $this->invokeMethod($client, 'apiGet', ['/']);
     }
@@ -73,7 +87,16 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testApiGetWith301Response()
     {
-        $client = $this->getClientWithResponse(301);
+        $client = $this->getClientWithResponse(301, [], [], function (GuzzleHttpClient $guzzleClient) {
+            /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+            $guzzleClient->expects($this->once())
+                ->method('createRequest')
+                ->with(
+                    'GET',
+                    'http://api.snd.no/news/v2/'
+                )
+                ->willReturn(new Request('GET', '/'));
+        });
 
         $client->getServiceDocument();
     }
@@ -83,24 +106,51 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testApiGetWith404Response()
     {
-        $client = $this->getClientWithResponse(404);
+        $client = $this->getClientWithResponse(404, [], [], function (GuzzleHttpClient $guzzleClient) {
+            /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+            $guzzleClient->expects($this->once())
+                ->method('createRequest')
+                ->with(
+                    'GET',
+                    'http://api.snd.no/news/v2/'
+                )
+                ->willReturn(new Request('GET', '/'));
+        });
 
         $client->getServiceDocument();
     }
 
     /**
-     * @expectedException \Guzzle\Http\Exception\ClientErrorResponseException
+     * @expectedException \Stp\SndApi\Common\Exception\UnsatisfactoryResponseCodeException
      */
     public function testApiGetWith403Response()
     {
-        $client = $this->getClientWithResponse(403);
+        $client = $this->getClientWithResponse(403, [], [], function (GuzzleHttpClient $guzzleClient) {
+            /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+            $guzzleClient->expects($this->once())
+                ->method('createRequest')
+                ->with(
+                    'GET',
+                    'http://api.snd.no/news/v2/'
+                )
+                ->willReturn(new Request('GET', '/'));
+        });
 
         $client->getServiceDocument();
     }
 
     public function testGetServiceDocument()
     {
-        $client = $this->getClientWithResponse(200);
+        $client = $this->getClientWithResponse(200, [], [], function (GuzzleHttpClient $guzzleClient) {
+            /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+            $guzzleClient->expects($this->once())
+                ->method('createRequest')
+                ->with(
+                    'GET',
+                    'http://api.snd.no/news/v2/'
+                )
+                ->willReturn(new Request('GET', '/'));
+        });
 
         $result = $client->getServiceDocument();
         $this->assertEquals([], $result);
@@ -108,16 +158,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSectionsList()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/sections', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/sections'
+                    )
+                    ->willReturn(new Request('GET', '/sections'));
             }
         );
 
@@ -127,16 +180,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSubsectionsList()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/sections/100/subsections', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/sections/100/subsections'
+                    )
+                    ->willReturn(new Request('GET', '/sections/100/subsections'));
             }
         );
 
@@ -146,16 +202,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSectionByUniqueName()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/sections/instance?uniqueName=sectionName', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/sections/instance?uniqueName=sectionName'
+                    )
+                    ->willReturn(new Request('GET', '/sections/instance?uniqueName=sectionName'));
             }
         );
 
@@ -165,16 +224,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSectionById()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/sections/100', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/sections/100'
+                    )
+                    ->willReturn(new Request('GET', '/sections/100'));
             }
         );
 
@@ -202,16 +264,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetArticlesBySectionIdWithParams()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/sections/100/desked?offset=50', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/sections/100/desked?offset=50'
+                    )
+                    ->willReturn(new Request('GET', '/sections/100/desked?offset=50'));
             }
         );
 
@@ -245,19 +310,22 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSearchByInstance()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                $url = 'http://api.snd.no/news/v2/publication/sa/searchContents/instance?contentId=100100' .
+                    '&contentType=article';
 
-                $scope->assertContains(
-                    '/searchContents/instance?contentId=100100&contentType=article',
-                    $request->getUrl()
-                );
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        $url
+                    )
+                    ->willReturn(new Request('GET', '/searchContents/instance?contentId=100100&contentType=article'));
             }
         );
 
@@ -267,16 +335,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSearchByCollection()
     {
-        $scope = $this;
         $client = $this->getClientWithResponse(
             200,
-            null,
             [],
-            function (Event $e) use ($scope) {
-                /** @var Request $request */
-                $request = $e['request'];
-
-                $scope->assertContains('/searchContents/collection?contentIds=100100%2C200200', $request->getUrl());
+            [],
+            function (GuzzleHttpClient $guzzleClient) {
+                /** @var GuzzleHttpClient|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+                $guzzleClient->expects($this->once())
+                    ->method('createRequest')
+                    ->with(
+                        'GET',
+                        'http://api.snd.no/news/v2/publication/sa/searchContents/collection?contentIds=100100,200200'
+                    )
+                    ->willReturn(new Request('GET', '/searchContents/collection?contentIds=100100,200200'));
             }
         );
 

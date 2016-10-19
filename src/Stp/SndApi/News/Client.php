@@ -2,8 +2,8 @@
 
 namespace Stp\SndApi\News;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Message\ResponseInterface;
 use Stp\SndApi\Common\Client as CommonClient;
 use Stp\SndApi\Common\Exception\ItemDoesNotExistsException;
 use Stp\SndApi\Common\Exception\UnsatisfactoryResponseCodeException;
@@ -18,39 +18,33 @@ use Stp\SndApi\News\Validator\ContentTypeValidator;
 class Client extends CommonClient
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($apiKey, $apiSecret, $publicationId)
     {
-        parent::__construct($apiKey, $apiSecret, $publicationId);
-
-        $this->setApiUrl(self::BASE_URL . '/news/v2');
+        parent::__construct($apiKey, $apiSecret, $publicationId, self::BASE_URL . '/news/v2');
     }
 
     /**
      * @param string $url
      * @param bool $acceptJsonResponse
-     * @return array|Response|null
+     *
+     * @return ResponseInterface
      * @throws ItemDoesNotExistsException
      * @throws UnsatisfactoryResponseCodeException
+     * @throws RequestException
      */
     protected function apiGet($url, $acceptJsonResponse = true)
     {
-        try {
-            $response = parent::apiGet($url, $acceptJsonResponse);
+        $response = parent::apiGet($url, $acceptJsonResponse);
 
-            if ($response->getStatusCode() !== 200) {
-                throw new UnsatisfactoryResponseCodeException();
-            }
-
-            return $response;
-        } catch (ClientErrorResponseException $e) {
-            if ($e->getResponse()->getStatusCode() === 404) {
-                throw new ItemDoesNotExistsException;
-            }
-
-            throw $e;
+        if ($response->getStatusCode() === 404) {
+            throw new ItemDoesNotExistsException;
+        } elseif ($response->getStatusCode() !== 200) {
+            throw new UnsatisfactoryResponseCodeException();
         }
+
+        return $response;
     }
 
     /**

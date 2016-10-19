@@ -2,9 +2,8 @@
 
 namespace Stp\SndApi\Common\Test;
 
-use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Message\Response;
 use PHPUnit_Framework_MockObject_MockObject;
 use Stp\SndApi\Common\Client;
 
@@ -44,16 +43,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test', $stub->getApiKey());
     }
 
-    public function testApiUrl()
-    {
-        $stub = $this->getStub();
-
-        $this->assertEquals('http://api.snd.no', $stub->getApiUrl());
-
-        $stub->setApiUrl('http://api1.snd.no/');
-        $this->assertEquals('http://api1.snd.no', $stub->getApiUrl());
-    }
-
     public function testValidPublicationId()
     {
         $stub = $this->getStub();
@@ -76,7 +65,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $stub = $this->getStub();
 
-        $client = new GuzzleClient();
+        $client = new GuzzleHttpClient();
         $request = $client->createRequest('GET', 'http://www.example.org/');
 
         $this->invokeMethod($stub, 'signRequest', [$request]);
@@ -90,12 +79,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $stub = $this->getStub();
         $stub->setApiKey('');
 
-        $client = new GuzzleClient();
+        $client = new GuzzleHttpClient();
         $request = $client->createRequest('GET', 'http://www.example.org/');
 
         $this->invokeMethod($stub, 'signRequest', [$request]);
 
-        $this->assertNull($request->getHeader('X-Snd-ApiKey'));
+        $this->assertEmpty($request->getHeader('X-Snd-ApiKey'));
     }
 
     /**
@@ -104,10 +93,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildRequest($isJsonAccepted)
     {
-
         $stub = $this->getStub();
 
-        $client = new GuzzleClient();
+        $client = new GuzzleHttpClient();
         $request = $client->createRequest('GET', 'http://www.example.org/');
 
         $this->invokeMethod($stub, 'buildRequest', [$request, $isJsonAccepted]);
@@ -115,7 +103,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if ($isJsonAccepted) {
             $this->assertNotNull($request->getHeader('Accept'));
         } else {
-            $this->assertNull($request->getHeader('Accept'));
+            $this->assertEmpty($request->getHeader('Accept'));
         }
         $this->assertNotNull($request->getHeader('Accept-Charset'));
 
@@ -125,11 +113,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $validResponse = new Response(200);
 
-        $plugin = new MockPlugin();
-        $plugin->addResponse($validResponse);
-
-        $client = new GuzzleClient();
-        $client->addSubscriber($plugin);
+        $client = $this->getMock(GuzzleHttpClient::class, ['send']);
+        $client->expects($this->once())
+            ->method('send')
+            ->willReturn($validResponse);
 
         $stub = $this->getStub();
         $stub->setClient($client);

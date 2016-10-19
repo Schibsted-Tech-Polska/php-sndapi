@@ -2,9 +2,10 @@
 
 namespace Stp\SndApi\Common;
 
-use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -16,7 +17,7 @@ abstract class Client implements LoggerAwareInterface
     const BASE_URL = 'http://api.snd.no';
 
     /**
-     * @var GuzzleClient
+     * @var GuzzleHttpClient
      */
     protected $client;
 
@@ -49,10 +50,12 @@ abstract class Client implements LoggerAwareInterface
      * @param string $apiKey
      * @param string $apiSecret
      * @param string $publicationId
+     * @param string $apiUrl
      */
-    public function __construct($apiKey, $apiSecret, $publicationId)
+    public function __construct($apiKey, $apiSecret, $publicationId, $apiUrl = self::BASE_URL)
     {
-        $this->client = new GuzzleClient($this->apiUrl);
+        $this->client = new GuzzleHttpClient(['base_url' => $apiUrl]);
+        $this->apiUrl = $apiUrl;
         $this->setApiKey($apiKey);
         $this->setApiSecret($apiSecret);
         $this->setPublicationId($publicationId);
@@ -89,7 +92,9 @@ abstract class Client implements LoggerAwareInterface
     /**
      * @param string $url
      * @param bool $acceptJsonResponse
-     * @return array|Response|null
+     *
+     * @return ResponseInterface
+     * @throws RequestException
      */
     protected function apiGet($url, $acceptJsonResponse = true)
     {
@@ -147,19 +152,6 @@ abstract class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param string $apiUrl
-     */
-    public function setApiUrl($apiUrl)
-    {
-        if (1 === preg_match('/\/$/', $apiUrl)) {
-            $apiUrl = substr($apiUrl, 0, -1);
-        }
-
-        $this->apiUrl = $apiUrl;
-        $this->client->setBaseUrl($this->apiUrl);
-    }
-
-    /**
      * @return string
      */
     public function getPublicationId()
@@ -196,9 +188,9 @@ abstract class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param GuzzleClient $client
+     * @param GuzzleHttpClient $client
      */
-    public function setClient($client)
+    public function setClient(GuzzleHttpClient $client)
     {
         $this->client = $client;
     }
